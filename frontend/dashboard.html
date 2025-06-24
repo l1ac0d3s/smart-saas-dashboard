@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Smartboard Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-color: #0f172a;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      color: #fbbf24;
+      text-align: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .card {
+      background: #111827;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+    }
+    .card h2 {
+      color: #14b8a6;
+    }
+    .muted {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+    }
+    th, td {
+      border-bottom: 1px solid #334155;
+      padding: 0.75rem;
+      text-align: left;
+    }
+    th {
+      color: #fbbf24;
+    }
+    .logout {
+      background: #fbbf24;
+      color: black;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      float: right;
+      margin-top: -2rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .logout:hover {
+      background: #fde68a;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="logout" onclick="logout()">Logout</button>
+  <h1>Welcome, <span id="username"></span> 👋</h1>
+
+  <div class="grid">
+    <div class="card">
+      <p class="muted">Active Users</p>
+      <h2 id="activeUsers">--</h2>
+    </div>
+    <div class="card">
+      <p class="muted">Total Revenue</p>
+      <h2>$<span id="revenue">--</span></h2>
+    </div>
+    <div class="card">
+      <p class="muted">Projects</p>
+      <h2 id="projects">--</h2>
+    </div>
+  </div>
+
+  <div style="margin-top: 3rem;">
+    <h2>User Directory</h2>
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Role</th></tr>
+      </thead>
+      <tbody id="userTable">
+        <!-- Dynamic Rows -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const token = localStorage.getItem("token");
+    const name = localStorage.getItem("name");
+
+    document.getElementById("username").textContent = name || "User";
+
+    if (!token) {
+      alert("Unauthorized! Please login again.");
+      window.location.href = "login.html";
+    }
+
+    async function fetchDashboard() {
+      try {
+        const res = await fetch("http://localhost:5000/api/dashboard", {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error("Access denied");
+        }
+
+        const data = await res.json();
+        document.getElementById("activeUsers").textContent = data.activeUsers;
+        document.getElementById("revenue").textContent = data.revenue;
+        document.getElementById("projects").textContent = data.projects;
+
+        const tbody = document.getElementById("userTable");
+        data.users.forEach((user) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `<td>${user.name}</td><td>${user.email}</td><td>${user.role}</td>`;
+          tbody.appendChild(row);
+        });
+
+      } catch (err) {
+        alert("Session expired or unauthorized.");
+        localStorage.clear();
+        window.location.href = "login.html";
+      }
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+
+    fetchDashboard();
+  </script>
+</body>
+</html>

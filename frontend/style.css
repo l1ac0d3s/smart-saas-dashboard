@@ -1,0 +1,30 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #fefefe;
+  color: #0f172a;
+  padding: 2rem;
+}
+.login-container, .dashboard {
+  max-width: 400px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+}
+input {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+button {
+  padding: 0.75rem 1.5rem;
+  background: #14b8a6;
+  border: none;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
